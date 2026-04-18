@@ -1,0 +1,7 @@
+celery
+redis
+ultralytics
+onnxruntime
+numpy
+opencv-python-headless
+python-dotenv

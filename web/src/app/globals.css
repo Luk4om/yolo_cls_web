@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  --background: #0a0a0c;
+  --foreground: #ffffff;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom transitions for glassmorphism */
+.glass-panel {
+  @apply bg-zinc-900/50 border border-zinc-800 backdrop-blur-xl;
+}

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  producer:
+    build: ./producers
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - UPLOAD_DIR=/app/data
+    volumes:
+      - ./producers:/app
+      - ./.data:/app/data
+    depends_on:
+      - redis
+
+  consumer:
+    build: ./consumers
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - MODEL_PATH=yolo26n-cls.onnx
+      - UPLOAD_DIR=/app/data
+    volumes:
+      - ./consumers:/app
+      - ./.data:/app/data
+    depends_on:
+      - redis
+
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - producer
