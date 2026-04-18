@@ -123,8 +123,3 @@ ai_web/
 ### Check Status
 `GET /status/{task_id}`
 - **Response**: `{"status": "SUCCESS", "result": { ... }}`
-
----
-
-## 🛡️ License
-MIT License. Created with ❤️ by Antigravity AI.
