@@ -28,6 +28,8 @@ class TaskResponse(BaseModel):
     task_id: str
     status: str
 
+import base64
+
 @app.post("/upload", response_model=TaskResponse)
 async def upload_image(file: UploadFile = File(...)):
     if not file.content_type.startswith("image/"):
@@ -37,11 +39,18 @@ async def upload_image(file: UploadFile = File(...)):
     ext = file.filename.split(".")[-1]
     file_path = os.path.join(UPLOAD_DIR, f"{file_id}.{ext}")
     
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
+    # Read file content
+    content = await file.read()
     
-    # Trigger Celery Task
-    task = celery_app.send_task("worker.classify_image", args=[file_path])
+    # Save locally (Optional, for logging)
+    with open(file_path, "wb") as f:
+        f.write(content)
+    
+    # Encode to Base64 for cross-space compatibility
+    base64_image = base64.b64encode(content).decode('utf-8')
+    
+    # Trigger Celery Task with Base64 data
+    task = celery_app.send_task("worker.classify_image", args=[base64_image])
     
     return {"task_id": task.id, "status": "PENDING"}
 

@@ -17,21 +17,26 @@ MODEL_PATH = os.getenv("MODEL_PATH", "yolo26n-cls.onnx")
 print(f"Loading model from {MODEL_PATH}...")
 model = YOLO(MODEL_PATH)
 
+import base64
+import io
+from PIL import Image
+
 @app.task(name="worker.classify_image")
-def classify_image(image_path: str):
-    print(f"Processing image: {image_path}")
+def classify_image(base64_data: str):
+    print("Received task: Processing base64 image data")
     try:
-        # Run inference
-        results = model.predict(image_path)
+        # Decode base64 to image
+        img_bytes = base64.b64decode(base64_data)
+        img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
         
-        # Parse results (Classification)
-        # top5 are the class indices and names
+        # Run inference (YOLO can take PIL images directly)
+        results = model.predict(img)
+        
+        # Parse results
         top1_name = results[0].names[results[0].probs.top1]
         top1_conf = float(results[0].probs.top1conf)
         
-        probs = results[0].probs.data.tolist()
         top5_indices = results[0].probs.top5
-        
         predictions = []
         for idx in top5_indices:
             predictions.append({
@@ -47,10 +52,6 @@ def classify_image(image_path: str):
     except Exception as e:
         print(f"Error processing image: {e}")
         return {"error": str(e)}
-    finally:
-        # Clean up image? Or keep it?
-        # For this demo, let's keep it but ideally we'd delete it or move to permanent storage
-        pass
 
 if __name__ == "__main__":
     app.start()
