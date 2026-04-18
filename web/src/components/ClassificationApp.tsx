@@ -268,7 +268,7 @@ export default function ClassificationApp() {
                       </motion.div>
                     )}
 
-                    {result && (
+                    {result && !("error" in result) ? (
                       <motion.div 
                         key="result-view"
                         initial={{ opacity: 0, y: 20 }}
@@ -283,7 +283,7 @@ export default function ClassificationApp() {
                           </div>
                           <div className="flex justify-between items-end">
                             <h3 className="text-4xl md:text-5xl font-black capitalize text-base-content tracking-tighter">
-                              {result.top1.replace(/_/g, ' ')}
+                              {result.top1?.replace(/_/g, ' ')}
                             </h3>
                             <p className="text-4xl font-black text-primary">
                               {(result.confidence * 100).toFixed(1)}<span className="text-sm opacity-50">%</span>
@@ -299,11 +299,11 @@ export default function ClassificationApp() {
                             <span className="h-[1px] flex-1 bg-white/5" />
                           </h4>
                           
-                          {result.predictions.slice(1, 6).map((pred, i) => (
+                          {result.predictions?.slice(1, 6).map((pred, i) => (
                             <div key={i} className="group">
                               <div className="flex justify-between items-center mb-2">
                                 <span className="text-sm font-bold uppercase tracking-tight text-base-content/70 group-hover:text-base-content transition-colors capitalize">
-                                  {pred.label.replace(/_/g, ' ')}
+                                  {pred.label?.replace(/_/g, ' ')}
                                 </span>
                                 <span className="font-mono text-sm font-bold text-secondary">
                                   {(pred.confidence * 100).toFixed(1)}%
@@ -330,7 +330,16 @@ export default function ClassificationApp() {
                           <span>Checksum: 0x{taskId?.slice(0, 8)}</span>
                         </div>
                       </motion.div>
-                    )}
+                    ) : result && "error" in result ? (
+                      <motion.div 
+                        key="worker-error"
+                        className="alert alert-warning bg-warning/20 border-warning/20 flex-col items-center p-8 text-center"
+                      >
+                        <AlertCircle size={48} className="mb-4 text-warning" />
+                        <h3 className="text-xl font-bold">Worker Error</h3>
+                        <p className="text-sm opacity-80">{(result as any).error}</p>
+                      </motion.div>
+                    ) : null}
                   </AnimatePresence>
                 </div>
               </div>
