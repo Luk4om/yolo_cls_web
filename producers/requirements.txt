@@ -3,5 +3,6 @@ uvicorn
 celery
 redis
 python-multipart
+aiofiles
 pydantic
 python-dotenv

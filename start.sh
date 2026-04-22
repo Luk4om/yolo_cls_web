@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# Start the Celery worker in the background
-echo "Starting Celery worker..."
-cd /app/consumers && celery -A src.worker worker --loglevel=info &
+# Export paths so modules can find each other
+export PYTHONPATH=$PYTHONPATH:/app/producers:/app/consumers
 
-# Start the FastAPI producer in the foreground
-echo "Starting FastAPI producer..."
-cd /app/producers && python src/main.py
+echo "🚀 Starting Celery worker..."
+celery -A consumers.src.worker worker --loglevel=info &
+
+echo "🌐 Starting FastAPI producer on port ${PORT:-7860}..."
+# Running uvicorn directly ensures it binds to the correct port for HF Spaces
+python -m uvicorn producers.src.main:app --host 0.0.0.0 --port ${PORT:-7860}
