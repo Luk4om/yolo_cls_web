@@ -21,6 +21,10 @@ app.add_middleware(
 # Celery Configuration
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 celery_app = Celery("tasks", broker=REDIS_URL, backend=REDIS_URL)
+celery_app.conf.update(
+    broker_use_ssl={"ssl_cert_reqs": "none"},
+    redis_backend_use_ssl={"ssl_cert_reqs": "none"}
+)
 
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "data")
 os.makedirs(UPLOAD_DIR, exist_ok=True)

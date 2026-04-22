@@ -9,6 +9,10 @@ load_dotenv()
 # Celery Configuration
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 app = Celery("worker", broker=REDIS_URL, backend=REDIS_URL)
+app.conf.update(
+    broker_use_ssl={"ssl_cert_reqs": "none"},
+    redis_backend_use_ssl={"ssl_cert_reqs": "none"}
+)
 
 # Model configuration
 MODEL_PATH = os.getenv("MODEL_PATH", "yolo26n-cls.onnx")
