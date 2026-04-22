@@ -1,6 +1,7 @@
 celery
 redis
 ultralytics
+onnx
 onnxruntime
 numpy
 opencv-python-headless

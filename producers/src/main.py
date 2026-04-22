@@ -2,6 +2,7 @@ import os
 import uuid
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from celery import Celery
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -61,6 +62,12 @@ async def get_status(task_id: str):
         return {"status": "SUCCESS", "result": res.result}
     return {"status": res.status}
 
+# Mount the static files from the 'web/out' directory
+# This allows the API to serve the frontend in environments like HF Spaces
+if os.path.exists("/app/web/out"):
+    app.mount("/", StaticFiles(directory="/app/web/out", html=True), name="static")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    port = int(os.getenv("PORT", 7860))
+    uvicorn.run(app, host="0.0.0.0", port=port)
