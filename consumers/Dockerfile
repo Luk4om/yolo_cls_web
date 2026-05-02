@@ -21,4 +21,5 @@ RUN chown -R appuser:appuser /app
 USER appuser
 ENV YOLO_CONFIG_DIR=/home/appuser/.config/Ultralytics
 
-CMD ["celery", "-A", "src.worker", "worker", "--loglevel=info"]
+RUN chmod +x start.sh
+CMD ["/bin/bash", "start.sh"]
