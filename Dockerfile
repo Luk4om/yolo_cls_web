@@ -37,6 +37,10 @@ COPY --from=frontend-builder /web/out ./web/out
 # Pre-create Ultralytics config directory and set permissions
 RUN mkdir -p /home/appuser/.config/Ultralytics && chown -R appuser:appuser /home/appuser/.config
 
+# Start script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Set ownership
 RUN chown -R appuser:appuser /app
 
@@ -44,11 +48,8 @@ USER appuser
 ENV HOME=/home/appuser
 ENV PATH="/home/appuser/.local/bin:${PATH}"
 ENV YOLO_CONFIG_DIR=/home/appuser/.config/Ultralytics
-ENV PYTHONPATH=/app/producers:/app/consumers
+ENV PYTHONPATH=/app:/app/producers:/app/consumers
+ENV MODEL_PATH=/app/consumers/yolo26n-cls.onnx
+ENV PORT=7860
 
-# Start script
-COPY start.sh .
-# The start script will be made executable during creation or here
-# RUN chmod +x start.sh 
-
-CMD ["/bin/bash", "start.sh"]
+CMD ["/bin/bash", "/app/start.sh"]

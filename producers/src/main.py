@@ -11,6 +11,10 @@ load_dotenv()
 
 app = FastAPI(title="YOLO AI Producer API")
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "producer"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
